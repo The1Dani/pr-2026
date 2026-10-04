@@ -1,3 +1,4 @@
 #!/usr/bin/env bash
 
-python3 ./Scripts/generate_numbers.py
+FILE_AMOUNT=8 python3 ./Scripts/generate_numbers.py
+cat numbers.*.txt > numbers.txt
