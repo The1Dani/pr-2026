@@ -10,9 +10,10 @@ import java.util.List;
 public class Task2 implements ITask {
 
     private final ArrayList<Path> files = new ArrayList<>();
-
-    public Task2(Path filesFolder) {
+    private final List<Integer> threadCounts =  new ArrayList<>();
+    public Task2(Path filesFolder, List<Integer> threadCounts) {
         var filename = "numbers.%d.txt";
+        this.threadCounts.addAll(threadCounts);
         for (var i = 1; i <= 8; i++) {
             files.add(
                     filesFolder
@@ -25,7 +26,7 @@ public class Task2 implements ITask {
     @Override
     public List<CountsPrinter> Run() {
 
-        List<Integer> threadCounts = List.of(1, 2, 4);
+//        List<Integer> threadCounts = List.of(1, 2, 4);
         List<CountsPrinter> results = new ArrayList<>();
 
         for (var threadCount : threadCounts) {
