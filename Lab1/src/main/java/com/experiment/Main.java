@@ -33,13 +33,13 @@ public class Main {
 
     static void main(String[] args) {
 
-        String path = args.length > 0 ? args[0] : "D:/University/5th-Semester/Multithreading/pr-2026/Lab1/numbers.txt";
+        String path = args.length > 0 ? args[0] : "numbers.txt";
         int threads = args.length > 1 ? Integer.parseInt(args[1]) : 1;
 
         // Without a thread argument Task3 runs the full 1..64 worker sweep
         List<Integer> workerCounts = args.length > 1 ? List.of(threads) : List.of(1, 2, 4, 8, 16, 32, 64);
 
-        ITask task = getTask1C(path, workerCounts);
+        ITask task = getTask1B(path, workerCounts);
         var results = task.Run();
         for (var r : results) {
             r.print();
