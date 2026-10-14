@@ -1,6 +1,7 @@
 package com.experiment;
 
 import com.experiment.Tasks.Task1A;
+import com.experiment.Tasks.Task1B;
 import com.experiment.Tasks.Task2;
 
 import java.nio.file.Paths;
@@ -14,7 +15,10 @@ public class Main {
         return new Task1A(_path);
 
     }
-
+    static ITask getTask1B(String path, List<Integer> threadCounts) {
+        var _path = Paths.get(path); // "."
+        return new Task1B(_path);
+    }
     static ITask getTask2(String path, List<Integer> threadCounts) {
         var _path = Paths.get(path); // "."
         return new Task2(_path, threadCounts);
@@ -22,10 +26,10 @@ public class Main {
 
     static void main(String[] args) {
 
-        String path = args.length > 0 ? args[0] : ".";
+        String path = args.length > 0 ? args[0] : "D:/University/5th-Semester/Multithreading/pr-2026/Lab1/numbers.txt";
         int threads = args.length > 1 ? Integer.parseInt(args[1]) : 1;
 
-        ITask task = getTask2(path, List.of(threads));
+        ITask task = getTask1B(path, List.of(threads));
         var results = task.Run();
         for (var r : results) {
             r.print();
