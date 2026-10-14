@@ -30,11 +30,8 @@ public class Task1B implements ITask {
         var counter = new ArrayCounter(numbers, threadCount);
         var header = "THREADS: %d, NUMBERS: %d\n".formatted(threadCount, numbers.length);
 
-        for (int run = 1; run <= 3; run++) {
-            results.add(new CountsPrinter(
-                    Measure.measure(counter::countSharedUnsync),
-                    "V1 shared, no sync (run %d/3) | %s".formatted(run, header)));
-        }
+
+
 
         results.add(new CountsPrinter(
                 Measure.measure(counter::countSharedLocked),
