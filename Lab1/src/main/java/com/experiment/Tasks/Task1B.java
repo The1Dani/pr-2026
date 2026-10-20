@@ -31,7 +31,18 @@ public class Task1B implements ITask {
         var header = "THREADS: %d, NUMBERS: %d\n".formatted(threadCount, numbers.length);
 
 
+<<<<<<< HEAD
 
+=======
+        for  (int i = 0; i < 3; i++) {
+            results.add(
+                    new  CountsPrinter(
+                            Measure.measure(counter::countSharedUnsync),
+                            "V1 Unsync | " + header
+                    )
+            );
+        }
+>>>>>>> feat/adi-task
 
         results.add(new CountsPrinter(
                 Measure.measure(counter::countSharedLocked),
