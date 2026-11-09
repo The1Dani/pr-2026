@@ -1,16 +1,15 @@
 using System.Diagnostics.CodeAnalysis;
 using System.Net.Sockets;
 using Newtonsoft.Json;
+using Serilog;
 
 namespace CoffeeServer;
-
-
-
 
 public class ConnectionPool
 {
     private readonly Socket _listener;
-    private LinkedList<Connection> _connections { get; } = [];
+    private LinkedList<Connection> Connections { get; } = [];
+    private readonly Lock _lock = new();
 
     public ConnectionPool(Socket listener)
     {
@@ -21,16 +20,49 @@ public class ConnectionPool
     public async Task Listen(int backlog)
     {
         var conHandler = new ConnectionHandler(this);
-        _listener.Listen(backlog);
+        try
+        {
+            _listener.Listen(backlog);
+        }
+        catch (Exception e)
+        {
+            Log.Debug(e,"Something went wrong!");
+        }
 
         Console.WriteLine($"Listening on {_listener.LocalEndPoint}");
 
         while (true)
         {
-            var client = await _listener.AcceptAsync();
-            Console.WriteLine($"Client {client.RemoteEndPoint} connected");
+            Socket client;
+            try
+            {
+                client = await _listener.AcceptAsync();
+            }
+            catch (ObjectDisposedException)
+            {
+                Log.Fatal("Listener closed, stopping accept loop");
+                throw;
+            }
+            catch (SocketException e)
+            {
+                Log.Warning(e, "Client could not be accepted");
+                continue;
+            }
+            catch (Exception e)
+            {
+                Log.Fatal(e, "Something went wrong!");
+                throw;
+            }
+            
+            Log.Information($"Client {client.RemoteEndPoint} connected");
+            
             var con = new Connection(client);
-            _connections.AddLast(con);
+
+            lock (_lock)
+            {
+                Connections.AddLast(con);
+            }
+
             conHandler.Handle(con);
         }
     }
@@ -39,20 +71,17 @@ public class ConnectionPool
     {
         Console.WriteLine($"Connection {connection.Sock.RemoteEndPoint} closed");
         connection.Dispose();
-        _connections.Remove(connection);
+        lock (_lock)
+        {
+            Connections.Remove(connection);
+        }
     }
 
     public bool Contains(Connection connection)
     {
-        return _connections.Contains(connection);
-    }
-
-    public IEnumerator<Connection> GetEnumerator()
-    {
-        foreach (var conn in _connections)
+        lock (_lock)
         {
-            if (conn.Sock is not null) // e.g. only yield open connections
-                yield return conn;
+            return Connections.Contains(connection);
         }
     }
 }

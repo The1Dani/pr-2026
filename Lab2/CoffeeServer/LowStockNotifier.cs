@@ -4,14 +4,14 @@ namespace CoffeeServer;
 
 public class LowStockNotifier : IDisposable
 {
-    private readonly Connection _con;
+    public readonly Connection Con;
     private readonly StoreRepository _repo;
     private const int AskSupplyTo = 30;
 
-    public LowStockNotifier(Connection providerConnection, StoreRepository repo)
+    public LowStockNotifier(Connection providerCon, StoreRepository repo)
     {
         repo.LowStock += OnLowStock;
-        _con = providerConnection;
+        Con = providerCon;
         _repo = repo;
     }
 
@@ -25,9 +25,9 @@ public class LowStockNotifier : IDisposable
                 askAmount[kvp.Key] = AskSupplyTo - kvp.Value;
         }
         
-        _con.WriteObject(askAmount);
+        Con.WriteObject(askAmount);
         
     }
-
+    
     public void Dispose() => _repo.LowStock -= OnLowStock;
 }

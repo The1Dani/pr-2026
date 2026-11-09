@@ -24,6 +24,7 @@ public class StoreRepository
     private readonly Lock _lock = new();
     public event Action<IReadOnlyDictionary<EProducts, int>>? LowStock;
     private const int LowThreshold = 5;
+    private const int UpperLimit = 1000;
 
     public IReadOnlyDictionary<EProducts, int> GetAllProducts()
     {
@@ -71,7 +72,7 @@ public class StoreRepository
             foreach (var (product, qty) in products)
             {
                 if (qty > 0)
-                    _repo[product] += qty;
+                    _repo[product] = (_repo[product] + qty) > UpperLimit ? UpperLimit : _repo[product] + qty;
             }
         }
     }
