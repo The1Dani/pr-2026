@@ -4,9 +4,9 @@ public static class DispatchRegistry
 {
     private static readonly Dictionary<ERole, CommandDispatcher> Handlers = new()
     {
-        [ERole.NoRole] = new NoRoleHandler(),
+        [ERole.NoRole] = new NoRoleDispatcher(),
         [ERole.Client] = new ClientDispatcher(),
-        [ERole.Provider] = new ProviderHandler(),
+        [ERole.Provider] = new ProviderDispatcher(),
     };
 
     public static CommandDispatcher Get(ERole role)

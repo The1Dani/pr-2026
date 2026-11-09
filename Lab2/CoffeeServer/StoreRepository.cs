@@ -23,7 +23,7 @@ public class StoreRepository
 
     private readonly Lock _lock = new();
     public event Action<IReadOnlyDictionary<EProducts, int>>? LowStock;
-    private const int LowThreshold = 20;
+    private const int LowThreshold = 5;
 
     public IReadOnlyDictionary<EProducts, int> GetAllProducts()
     {

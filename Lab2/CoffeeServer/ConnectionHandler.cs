@@ -91,7 +91,6 @@ public class ConnectionHandler
 
                 if (con.Role == ERole.Provider)
                     StoreService.Instance.AddProvider(con);
-
             }
             else
             {
@@ -126,9 +125,9 @@ public class ConnectionHandler
     private async Task HandleCommand(Connection con, string req)
     {
         var obj = JObject.Parse(req);
-        var action = (string?) obj["action"]
-            ?? throw new InvalidOperationException($"Unknown action: {req}");;
+        var action = (string?)obj["action"]
+                     ?? throw new InvalidOperationException($"Unknown action: {req}");
         obj.Remove("action");
-        await DispatchRegistry.Get(con.Role).Dispatch(con, action, obj);
+        await DispatchRegistry.Get(con.Role).Dispatch(con, action.ToLower(), obj);
     }
 }

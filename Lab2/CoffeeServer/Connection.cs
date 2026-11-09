@@ -21,6 +21,7 @@ public class Connection : IDisposable
     {
         Sock = client;
         _writeLoop = WriteLoopAsync();
+        EndPoint = Sock.RemoteEndPoint?.ToString() ?? "None";
     }
 
     private class RoleModel
@@ -31,13 +32,15 @@ public class Connection : IDisposable
 
     public Socket Sock { get; }
     public ERole Role;
+    public readonly string EndPoint;
 
     private readonly Channel<ReadOnlyMemory<byte>> _outbox =
         Channel.CreateUnbounded<ReadOnlyMemory<byte>>(new UnboundedChannelOptions { SingleReader = true });
 
     private readonly Task _writeLoop;
     private int _disposed;
-
+    public readonly CancellationToken CancelToken = new();
+    
     public void SetRoleFromJson(string firstRequest)
     {
         var req = JsonConvert.DeserializeObject<RoleModel>(firstRequest);

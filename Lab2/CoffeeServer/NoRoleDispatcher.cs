@@ -12,7 +12,7 @@ public class RequestModel
     public int Tea { get; set; } = 0;
 }
 
-public class NoRoleHandler :  CommandDispatcher
+public class NoRoleDispatcher :  CommandDispatcher
 {
     protected override void OnOther(Connection con, string action, JObject payload)
     {
