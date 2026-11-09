@@ -8,5 +8,5 @@ public enum ERole
 {
     NoRole,
     Client,
-    Provider
+    Provider,
 }

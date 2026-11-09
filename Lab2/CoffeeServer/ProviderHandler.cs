@@ -1,6 +1,6 @@
 namespace CoffeeServer;
 
-public class ProviderHandler : IRequestHandler
+public class ProviderHandler : CommandDispatcher
 {
     public Task Handle(Connection con, string req)
     {

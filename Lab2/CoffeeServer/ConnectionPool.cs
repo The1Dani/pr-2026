@@ -5,36 +5,7 @@ using Newtonsoft.Json;
 namespace CoffeeServer;
 
 
-public class Connection(Socket client)
-{
-    private class RoleModel
-    {
-        [JsonProperty(Required = Required.Always)]
-        public ERole Role { get; set; }
-    }
 
-    public Socket Sock { get; } = client;
-    public ERole Role;
-
-    public void SetRoleFromJson(string firstRequest)
-    {
-        var req = JsonConvert.DeserializeObject<RoleModel>(firstRequest);
-        if (req is not null)
-        {
-            SetRole(req.Role);
-            Console.WriteLine($"Role {req.Role} has been set for {Sock.RemoteEndPoint}");
-        }
-        else
-        {
-            throw new Exception("Invalid role");
-        }
-    }
-
-    public void SetRole(ERole role)
-    {
-        Role = role;
-    }
-}
 
 public class ConnectionPool
 {
@@ -67,7 +38,7 @@ public class ConnectionPool
     public void CloseConnection(Connection connection)
     {
         Console.WriteLine($"Connection {connection.Sock.RemoteEndPoint} closed");
-        connection.Sock.Close();
+        connection.Dispose();
         _connections.Remove(connection);
     }
 

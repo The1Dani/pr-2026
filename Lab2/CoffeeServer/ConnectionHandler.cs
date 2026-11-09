@@ -1,5 +1,6 @@
 using System.Diagnostics;
 using System.Text;
+using Newtonsoft.Json.Linq;
 
 namespace CoffeeServer;
 
@@ -87,6 +88,10 @@ public class ConnectionHandler
             {
                 var line = reqReader.GetString();
                 con.SetRoleFromJson(line);
+
+                if (con.Role == ERole.Provider)
+                    StoreService.Instance.AddProvider(con);
+
             }
             else
             {
@@ -94,14 +99,12 @@ public class ConnectionHandler
                 return;
             }
 
-            var requestHandler = HandlerRegistry.Get(con.Role);
-            
             while (await reqReader.Read())
             {
                 var req = reqReader.GetString();
                 try
                 {
-                    await requestHandler.Handle(con, req);
+                    await HandleCommand(con, req);
                 }
                 catch (Exception e)
                 {
@@ -118,5 +121,14 @@ public class ConnectionHandler
         {
             _pool.CloseConnection(con);
         }
+    }
+
+    private async Task HandleCommand(Connection con, string req)
+    {
+        var obj = JObject.Parse(req);
+        var action = (string?) obj["action"]
+            ?? throw new InvalidOperationException($"Unknown action: {req}");;
+        obj.Remove("action");
+        await DispatchRegistry.Get(con.Role).Dispatch(con, action, obj);
     }
 }
