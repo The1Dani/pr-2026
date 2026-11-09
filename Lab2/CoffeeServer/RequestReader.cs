@@ -25,7 +25,7 @@ public class RequestReader(Connection con, StringBuilder sb)
             var charCount = 0;
             try
             {
-                var count = await con.Sock.ReceiveAsync(_buffer);
+                var count = await con.Sock.ReceiveAsync(_buffer, SocketFlags.None, con.CancelToken);
                 charCount = _decoder.GetChars(_buffer, 0, count, _chars, 0);
                 if (count <= 0)
                 {
