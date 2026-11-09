@@ -29,7 +29,6 @@ public class ClientDispatcher : CommandDispatcher
         }
 
         // Call Service
-        
         if (!_service.ReserveForOrder(payload, out var lease))
         {
             con.WriteError("Not enough products!");

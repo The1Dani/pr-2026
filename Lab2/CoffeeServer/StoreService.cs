@@ -29,6 +29,8 @@ public class StoreService
 {
     public static readonly StoreService Instance = new();
     private readonly StoreRepository _repo = new();
+    private readonly LinkedList<LowStockNotifier> _notifiers = [];
+    private readonly Lock _lock = new();
     //TODO: Add a list for the stock notifiers and handle the removal as well!!
 
     private int _idCounter = 0;
@@ -40,9 +42,24 @@ public class StoreService
 
     public void AddProvider(Connection connection)
     {
-        new LowStockNotifier(connection, _repo);
+        lock (_lock)
+        {
+            _notifiers.AddLast(new LowStockNotifier(connection, _repo));
+        }
     }
 
+    public void RemoveProvider(Connection connection)
+    {
+        lock (_lock)
+        {
+            foreach (var notifier in _notifiers.Where(notifier => notifier.Con == connection))
+            {
+                notifier.Dispose();
+                _notifiers.Remove(notifier);
+            }
+        }
+    }
+    
     public IReadOnlyDictionary<EProducts, int> GetMenu() => _repo.GetAllProducts();
 
     public bool ReserveForOrder(MenuDto menu, [NotNullWhen(true)] out OrderLease? lease)
@@ -73,11 +90,11 @@ public class StoreService
         _repo.AddProducts(lease.Items);
         ReleaseLease(lease);
     }
-    
+
     public void ReleaseLease(OrderLease lease)
     {
         _leases.TryRemove(lease.Id, out _);
     }
-    public void AddItems(MenuDto items) => _repo.AddProducts(items);
 
+    public void AddItems(MenuDto items) => _repo.AddProducts(items);
 }

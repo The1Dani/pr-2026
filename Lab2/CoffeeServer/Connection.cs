@@ -2,18 +2,9 @@ using System.Net.Sockets;
 using System.Text;
 using System.Threading.Channels;
 using Newtonsoft.Json;
+using Serilog;
 
 namespace CoffeeServer;
-
-class ErrorDto
-{
-    public ErrorDto(string error)
-    {
-        Error = error;
-    }
-
-    public string Error { get; set; }
-}
 
 public class Connection : IDisposable
 {
@@ -39,15 +30,16 @@ public class Connection : IDisposable
 
     private readonly Task _writeLoop;
     private int _disposed;
-    public readonly CancellationToken CancelToken = new();
-    
+    private readonly CancellationTokenSource _cts = new();
+    public CancellationToken CancelToken => _cts.Token;
+
     public void SetRoleFromJson(string firstRequest)
     {
         var req = JsonConvert.DeserializeObject<RoleModel>(firstRequest);
         if (req is not null)
         {
             SetRole(req.Role);
-            Console.WriteLine($"Role {req.Role} has been set for {Sock.RemoteEndPoint}");
+            Log.Information("Role {ReqRole} has been set for {SockRemoteEndPoint}", req.Role, Sock.RemoteEndPoint);
         }
         else
         {
@@ -69,17 +61,29 @@ public class Connection : IDisposable
                 await WriteToSocketAsync(message);
             }
         }
+        catch (Exception e) when (e is SocketException or ObjectDisposedException)
+        {
+            Log.Information("The connection was closed");
+        }
         catch (Exception e)
         {
-            Console.WriteLine(e);
+            Log.Error(e, "An exception occured while writing message");
+        }
+        finally
+        {
             _outbox.Writer.TryComplete();
         }
     }
 
     public void Write(string data)
     {
-        ReadOnlyMemory<byte> bytes = Encoding.UTF8.GetBytes(data + "\r\n").AsMemory();
-        _outbox.Writer.TryWrite(bytes);
+        _outbox.Writer.TryWrite(ConvertStringToByteArray(data));
+    }
+
+    private static ReadOnlyMemory<byte> ConvertStringToByteArray(string data)
+    {
+        var bytes = Encoding.UTF8.GetBytes(data + "\r\n");
+        return new ReadOnlyMemory<byte>(bytes);
     }
 
     private async Task WriteToSocketAsync(ReadOnlyMemory<byte> data)
@@ -95,19 +99,47 @@ public class Connection : IDisposable
 
     public void WriteError(string error)
     {
-        var obj = JsonConvert.SerializeObject(new ErrorDto(error));
+        var obj = JsonConvert.SerializeObject(new
+        {
+            Error = error,
+        });
         Write(obj);
+    }
+
+    public async Task WriteErrorAndFinish(string error)
+    {
+        WriteError(error);
+        _outbox.Writer.TryComplete();
+        await _writeLoop;
     }
 
     public void Dispose()
     {
         if (Interlocked.Exchange(ref _disposed, 1) == 1) return;
 
-        _outbox.Writer.TryComplete();                       // no new messages
-        try { _writeLoop.Wait(TimeSpan.FromSeconds(2)); }   // flush what's queued
-        catch { }
+        _outbox.Writer.TryComplete(); // no new messages
 
-        try { Sock.Shutdown(SocketShutdown.Both); } catch { }
+        if (Role is ERole.Provider)
+        {
+            StoreService.Instance.RemoveProvider(this);
+        }
+        
+        try
+        {
+            _cts.Cancel();
+        }
+        catch
+        {
+        }
+
+        try
+        {
+            Sock.Shutdown(SocketShutdown.Both);
+        }
+        catch
+        {
+        }
+
         Sock.Close();
     }
 }

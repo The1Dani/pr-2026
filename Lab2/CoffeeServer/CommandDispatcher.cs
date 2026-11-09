@@ -1,4 +1,5 @@
 using Newtonsoft.Json.Linq;
+using Serilog;
 
 namespace CoffeeServer;
 
@@ -38,7 +39,7 @@ public abstract class CommandDispatcher
 
     protected virtual void OnOther(Connection con, string action, JObject payload)
     {
-        Console.WriteLine($"Action: {action} is not implemented");
+        Log.Information("Action: {Action} is not implemented. Endpoint {ConEndPoint}", action, con.EndPoint);
+        con.WriteError($"Action: {action} is not implemented.");
     }
-    
 }

@@ -1,69 +1,10 @@
 using System.Diagnostics;
 using System.Text;
+using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
+using Serilog;
 
 namespace CoffeeServer;
-
-public class RequestReader(Connection con, StringBuilder sb)
-{
-    private const int BufferSize = 1024;
-    private readonly Decoder _decoder = Encoding.UTF8.GetDecoder();
-    private readonly byte[] _buffer = new byte[BufferSize];
-    private readonly char[] _chars = new char[Encoding.UTF8.GetMaxCharCount(BufferSize)];
-    private bool _crSeen = false;
-
-    public async Task<bool> Read()
-    {
-        while (true)
-        {
-            try
-            {
-                var count = await con.Sock.ReceiveAsync(_buffer);
-                _decoder.GetChars(_buffer, 0, count, _chars, 0);
-                if (count <= 0)
-                {
-                    return false;
-                }
-            }
-            catch (Exception e)
-            {
-                Console.WriteLine(e);
-                throw; // TODO: replace
-            }
-
-            foreach (var ch in _chars)
-            {
-                sb.Append(ch.ToString());
-                if (ch == '\r')
-                {
-                    _crSeen = true;
-                    continue;
-                }
-
-                if (_crSeen && ch == '\n')
-                {
-                    // Return true to tell the connection is still going
-                    return true;
-                }
-
-                _crSeen = false;
-            }
-
-            if (sb.Length > 1024 * 1024) //1MiB
-            {
-                //TODO: create an error handler that will write an error message to the socket
-                return false;
-            }
-        }
-    }
-
-    public string GetString()
-    {
-        var req = sb.ToString().Trim();
-        sb.Clear();
-        return req;
-    }
-}
 
 public class ConnectionHandler
 {
@@ -87,14 +28,22 @@ public class ConnectionHandler
             if (await reqReader.Read())
             {
                 var line = reqReader.GetString();
-                con.SetRoleFromJson(line);
+                try
+                {
+                    con.SetRoleFromJson(line);
+                }
+                catch (Exception e) when (e is JsonException or InvalidOperationException)
+                {
+                    await con.WriteErrorAndFinish(
+                        "Expected a handshake like {\"Role\":\"Client\"} (roles: Client, Provider, NoRole)");
+                    return; // finally → CloseConnection
+                }
 
                 if (con.Role == ERole.Provider)
                     StoreService.Instance.AddProvider(con);
             }
             else
             {
-                _pool.CloseConnection(con);
                 return;
             }
 
@@ -105,16 +54,23 @@ public class ConnectionHandler
                 {
                     await HandleCommand(con, req);
                 }
+                catch (Exception e) when (e is InvalidOperationException)
+                {
+                    con.WriteError(e.Message);
+                }
+                catch (Exception e) when (e is JsonReaderException or JsonSerializationException)
+                {
+                    con.WriteError("Json bad formatted.");
+                }
                 catch (Exception e)
                 {
-                    Console.WriteLine(e);
-                    throw;
+                    Log.Debug(e, "Request from {ConEndPoint} was wrong!", con.EndPoint);
                 }
             }
         }
         catch (Exception e)
         {
-            Console.WriteLine(e);
+            Log.Warning(e, "Request from {ConEndPoint} died!", con.EndPoint);
         }
         finally
         {
@@ -122,11 +78,20 @@ public class ConnectionHandler
         }
     }
 
-    private async Task HandleCommand(Connection con, string req)
+    private static async Task HandleCommand(Connection con, string req)
     {
         var obj = JObject.Parse(req);
-        var action = (string?)obj["action"]
+        string action;
+        try
+        {
+            action = (string?)obj["action"]
                      ?? throw new InvalidOperationException($"Unknown action: {req}");
+        }
+        catch (Exception e)
+        {
+            throw new InvalidOperationException(e.Message);
+        }
+
         obj.Remove("action");
         await DispatchRegistry.Get(con.Role).Dispatch(con, action.ToLower(), obj);
     }

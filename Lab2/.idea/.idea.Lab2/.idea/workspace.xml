@@ -5,25 +5,20 @@
   </component>
   <component name="ChangeListManager">
     <list default="true" id="a8829aeb-4fad-4cde-bd6d-3ef1e0f82107" name="Changes" comment="">
-      <change afterPath="$PROJECT_DIR$/CoffeeServer/ClientDispatcher.cs" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/CoffeeServer/CommandDispatcher.cs" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/CoffeeServer/Connection.cs" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/CoffeeServer/LowStockNotifier.cs" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/CoffeeServer/StoreRepository.cs" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/CoffeeServer/StoreService.cs" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/CoffeeServer/RequestReader.cs" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/../Lab1/src/main/java/com/experiment/Tasks/Task1B.java" beforeDir="false" afterPath="$PROJECT_DIR$/../Lab1/src/main/java/com/experiment/Tasks/Task1B.java" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/.idea/.idea.Lab2/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/.idea.Lab2/.idea/workspace.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/CoffeeServer/ClientHandler.cs" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/CoffeeServer/ClientDispatcher.cs" beforeDir="false" afterPath="$PROJECT_DIR$/CoffeeServer/ClientDispatcher.cs" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/CoffeeServer/CoffeeServer.csproj" beforeDir="false" afterPath="$PROJECT_DIR$/CoffeeServer/CoffeeServer.csproj" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/CoffeeServer/CommandDispatcher.cs" beforeDir="false" afterPath="$PROJECT_DIR$/CoffeeServer/CommandDispatcher.cs" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/CoffeeServer/Connection.cs" beforeDir="false" afterPath="$PROJECT_DIR$/CoffeeServer/Connection.cs" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/CoffeeServer/ConnectionHandler.cs" beforeDir="false" afterPath="$PROJECT_DIR$/CoffeeServer/ConnectionHandler.cs" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/CoffeeServer/ConnectionPool.cs" beforeDir="false" afterPath="$PROJECT_DIR$/CoffeeServer/ConnectionPool.cs" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/CoffeeServer/ERole.cs" beforeDir="false" afterPath="$PROJECT_DIR$/CoffeeServer/ERole.cs" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/CoffeeServer/HandlerRegistry.cs" beforeDir="false" afterPath="$PROJECT_DIR$/CoffeeServer/DispatchRegistry.cs" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/CoffeeServer/IRequestHandler.cs" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/CoffeeServer/ProviderHandler.cs" beforeDir="false" afterPath="$PROJECT_DIR$/CoffeeServer/ProviderHandler.cs" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/CoffeeServer/RequestHandler.cs" beforeDir="false" afterPath="$PROJECT_DIR$/CoffeeServer/NoRoleHandler.cs" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/CoffeeServer/obj/Debug/net10.0/CoffeeServer.AssemblyInfo.cs" beforeDir="false" afterPath="$PROJECT_DIR$/CoffeeServer/obj/Debug/net10.0/CoffeeServer.AssemblyInfo.cs" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/CoffeeServer/obj/Debug/net10.0/CoffeeServer.AssemblyInfoInputs.cache" beforeDir="false" afterPath="$PROJECT_DIR$/CoffeeServer/obj/Debug/net10.0/CoffeeServer.AssemblyInfoInputs.cache" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/CoffeeServer/obj/rider.project.model.nuget.info" beforeDir="false" afterPath="$PROJECT_DIR$/CoffeeServer/obj/rider.project.model.nuget.info" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/CoffeeServer/LowStockNotifier.cs" beforeDir="false" afterPath="$PROJECT_DIR$/CoffeeServer/LowStockNotifier.cs" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/CoffeeServer/NoRoleDispatcher.cs" beforeDir="false" afterPath="$PROJECT_DIR$/CoffeeServer/NoRoleDispatcher.cs" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/CoffeeServer/Program.cs" beforeDir="false" afterPath="$PROJECT_DIR$/CoffeeServer/Program.cs" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/CoffeeServer/StoreService.cs" beforeDir="false" afterPath="$PROJECT_DIR$/CoffeeServer/StoreService.cs" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Lab2.sln.DotSettings.user" beforeDir="false" afterPath="$PROJECT_DIR$/Lab2.sln.DotSettings.user" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -38,9 +33,11 @@
   </component>
   <component name="HighlightingSettingsPerFile">
     <setting file="file://$APPLICATION_CONFIG_DIR$/resharper-host/DecompilerCache/decompiler/1aa26d79d88a41ed9881f7faf35331378aa00/4d/3dfc2930/Socket.cs" root0="FORCE_HIGHLIGHTING" />
+    <setting file="file://$APPLICATION_CONFIG_DIR$/resharper-host/DecompilerCache/decompiler/800e28eb65b4445ebb3868fecc249fa042200/4c/6d751626/LinkedList`1.cs" root0="FORCE_HIGHLIGHTING" />
     <setting file="file://$PROJECT_DIR$/CoffeeServer/Connection.cs" root0="FORCE_HIGHLIGHTING" />
+    <setting file="file://$PROJECT_DIR$/CoffeeServer/GlobalUsing.cs" root0="FORCE_HIGHLIGHTING" />
     <setting file="file://$PROJECT_DIR$/CoffeeServer/LowStockNotifier.cs" root0="FORCE_HIGHLIGHTING" />
-    <setting file="file://$PROJECT_DIR$/CoffeeServer/ShopRepository.cs" root0="FORCE_HIGHLIGHTING" />
+    <setting file="file://$PROJECT_DIR$/CoffeeServer/RequestReader.cs" root0="FORCE_HIGHLIGHTING" />
     <setting file="file://$PROJECT_DIR$/CoffeeServer/StoreService.cs" root0="FORCE_HIGHLIGHTING" />
   </component>
   <component name="ProjectColorInfo">{
@@ -51,20 +48,20 @@
     <option name="hideEmptyMiddlePackages" value="true" />
     <option name="showLibraryContents" value="true" />
   </component>
-  <component name="PropertiesComponent"><![CDATA[{
-  "keyToString": {
-    ".NET Project.CoffeeServer.executor": "Run",
-    "ModuleVcsDetector.initialDetectionPerformed": "true",
-    "RunOnceActivity.ShowReadmeOnStart": "true",
-    "RunOnceActivity.TerminalTabsStorage.copyFrom.TerminalArrangementManager.252": "true",
-    "RunOnceActivity.git.unshallow": "true",
-    "RunOnceActivity.typescript.service.memoryLimit.init": "true",
-    "git-widget-placeholder": "main",
-    "nodejs_package_manager_path": "npm",
-    "settings.editor.selected.configurable": "preferences.lookFeel",
-    "vue.rearranger.settings.migration": "true"
+  <component name="PropertiesComponent">{
+  &quot;keyToString&quot;: {
+    &quot;.NET Project.CoffeeServer.executor&quot;: &quot;Run&quot;,
+    &quot;ModuleVcsDetector.initialDetectionPerformed&quot;: &quot;true&quot;,
+    &quot;RunOnceActivity.ShowReadmeOnStart&quot;: &quot;true&quot;,
+    &quot;RunOnceActivity.TerminalTabsStorage.copyFrom.TerminalArrangementManager.252&quot;: &quot;true&quot;,
+    &quot;RunOnceActivity.git.unshallow&quot;: &quot;true&quot;,
+    &quot;RunOnceActivity.typescript.service.memoryLimit.init&quot;: &quot;true&quot;,
+    &quot;git-widget-placeholder&quot;: &quot;main&quot;,
+    &quot;nodejs_package_manager_path&quot;: &quot;npm&quot;,
+    &quot;settings.editor.selected.configurable&quot;: &quot;preferences.lookFeel&quot;,
+    &quot;vue.rearranger.settings.migration&quot;: &quot;true&quot;
   }
-}]]></component>
+}</component>
   <component name="RunManager">
     <configuration name="CoffeeServer" type="DotNetProject" factoryName=".NET Project">
       <option name="EXE_PATH" value="" />
@@ -98,7 +95,9 @@
       <workItem from="1793954021388" duration="9578000" />
       <workItem from="1793987561420" duration="5511000" />
       <workItem from="1794120933474" duration="5382000" />
-      <workItem from="1794207134378" duration="12608000" />
+      <workItem from="1794207134378" duration="13149000" />
+      <workItem from="1794225408120" duration="9700000" />
+      <workItem from="1794242819236" duration="8937000" />
     </task>
     <servers />
   </component>
@@ -126,5 +125,10 @@
         </breakpoint>
       </breakpoints>
     </breakpoint-manager>
+    <pin-to-top-manager>
+      <pinned-members>
+        <PinnedItemInfo parentTag="Frame#CoffeeServer.ClientDispatcher.HandleOrder" memberName="payload" />
+      </pinned-members>
+    </pin-to-top-manager>
   </component>
 </project>
