@@ -7,14 +7,10 @@
     <list default="true" id="a8829aeb-4fad-4cde-bd6d-3ef1e0f82107" name="Changes" comment="">
       <change beforePath="$PROJECT_DIR$/../Lab1/src/main/java/com/experiment/Tasks/Task1B.java" beforeDir="false" afterPath="$PROJECT_DIR$/../Lab1/src/main/java/com/experiment/Tasks/Task1B.java" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/.idea/.idea.Lab2/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/.idea.Lab2/.idea/workspace.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/CoffeeServer/ClientDispatcher.cs" beforeDir="false" afterPath="$PROJECT_DIR$/CoffeeServer/ClientDispatcher.cs" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/CoffeeServer/CommandDispatcher.cs" beforeDir="false" afterPath="$PROJECT_DIR$/CoffeeServer/CommandDispatcher.cs" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/CoffeeServer/Connection.cs" beforeDir="false" afterPath="$PROJECT_DIR$/CoffeeServer/Connection.cs" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/CoffeeServer/ConnectionHandler.cs" beforeDir="false" afterPath="$PROJECT_DIR$/CoffeeServer/ConnectionHandler.cs" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/CoffeeServer/Program.cs" beforeDir="false" afterPath="$PROJECT_DIR$/CoffeeServer/Program.cs" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/CoffeeServer/ProviderDispatcher.cs" beforeDir="false" afterPath="$PROJECT_DIR$/CoffeeServer/ProviderDispatcher.cs" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/CoffeeServer/RequestReader.cs" beforeDir="false" afterPath="$PROJECT_DIR$/CoffeeServer/RequestReader.cs" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/CoffeeServer/StoreRepository.cs" beforeDir="false" afterPath="$PROJECT_DIR$/CoffeeServer/StoreRepository.cs" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/CoffeeServer/StoreService.cs" beforeDir="false" afterPath="$PROJECT_DIR$/CoffeeServer/StoreService.cs" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -93,7 +89,7 @@
       <workItem from="1794120933474" duration="5382000" />
       <workItem from="1794207134378" duration="13149000" />
       <workItem from="1794225408120" duration="9700000" />
-      <workItem from="1794242819236" duration="13277000" />
+      <workItem from="1794242819236" duration="14334000" />
     </task>
     <servers />
   </component>

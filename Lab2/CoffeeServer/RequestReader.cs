@@ -32,9 +32,9 @@ public class RequestReader(Connection con, StringBuilder sb)
                     return false;
                 }
             }
-            catch (Exception e) when (e is SocketException or ObjectDisposedException)
+            catch (Exception e) when (e is SocketException or ObjectDisposedException or OperationCanceledException)
             {
-                Log.Logger.Debug(e, $"Connection {con.EndPoint} closed.");
+                Log.Debug("Connection {EndPoint} closed: {Reason}", con.EndPoint, e.Message);
                 return false;
             }
 

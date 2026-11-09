@@ -65,6 +65,7 @@ public class ConnectionHandler
                 catch (Exception e)
                 {
                     Log.Debug(e, "Request from {ConEndPoint} was wrong!", con.EndPoint);
+                    con.WriteError("Internal Server Error");
                 }
             }
         }

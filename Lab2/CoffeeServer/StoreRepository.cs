@@ -72,7 +72,7 @@ public class StoreRepository
             foreach (var (product, qty) in products)
             {
                 if (qty > 0)
-                    _repo[product] = (_repo[product] + qty) > UpperLimit ? UpperLimit : _repo[product];
+                    _repo[product] = (_repo[product] + qty) > UpperLimit ? UpperLimit : _repo[product] + qty;
             }
         }
     }

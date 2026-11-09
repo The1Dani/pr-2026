@@ -27,7 +27,8 @@ public class Connection : IDisposable
     public readonly string EndPoint;
 
     private readonly Channel<ReadOnlyMemory<byte>> _outbox =
-        Channel.CreateUnbounded<ReadOnlyMemory<byte>>(new UnboundedChannelOptions { SingleReader = true });
+        Channel.CreateBounded<ReadOnlyMemory<byte>>(new BoundedChannelOptions(1024)
+            { SingleReader = true, FullMode = BoundedChannelFullMode.Wait });
 
     private readonly Task _writeLoop;
     private int _disposed;
@@ -40,9 +41,7 @@ public class Connection : IDisposable
             new StringEnumConverter { AllowIntegerValues = false });
 
         if (req is null || !Enum.IsDefined(req.Role))
-        {
-            throw new Exception("Invalid role");
-        }
+            throw new InvalidOperationException("Invalid role");
 
         SetRole(req.Role);
         Log.Information("Role {ReqRole} has been set for {SockRemoteEndPoint}", req.Role, Sock.RemoteEndPoint);
@@ -78,7 +77,8 @@ public class Connection : IDisposable
 
     public void Write(string data)
     {
-        _outbox.Writer.TryWrite(ConvertStringToByteArray(data));
+        if (!_outbox.Writer.TryWrite(ConvertStringToByteArray(data)) && !_cts.IsCancellationRequested)
+            _cts.Cancel();   // client isn't reading: disconnect it
     }
 
     private static ReadOnlyMemory<byte> ConvertStringToByteArray(string data)
@@ -119,6 +119,7 @@ public class Connection : IDisposable
         if (Interlocked.Exchange(ref _disposed, 1) == 1) return;
 
         _outbox.Writer.TryComplete(); // no new messages
+        _writeLoop.Wait(500);
 
         try
         {

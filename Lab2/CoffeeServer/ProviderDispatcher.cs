@@ -12,6 +12,10 @@ public class ProviderDispatcher : CommandDispatcher
     {
         var toAdd = items.Where(kvp => kvp.Value > 0).ToDictionary(kvp => kvp.Key, kvp => kvp.Value);
         StoreService.Instance.AddItems(toAdd);
+        con.WriteObject(new
+        {
+            Message = "Delivery accepted.",
+        });
     }
     
     
