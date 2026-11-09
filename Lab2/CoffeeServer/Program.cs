@@ -1,6 +1,5 @@
 ﻿// Init
 
-
 using System.Net;
 using System.Net.Sockets;
 using CoffeeServer;
@@ -9,6 +8,9 @@ using Serilog;
 
 int PORT = 4000;
 int BACKLOG = 256;
+int threadCount = Environment.ProcessorCount;
+
+ThreadPool.SetMinThreads(threadCount, threadCount);
 
 Log.Logger = new LoggerConfiguration()
     .MinimumLevel.Debug()

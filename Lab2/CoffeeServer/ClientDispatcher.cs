@@ -45,12 +45,24 @@ public class ClientDispatcher : CommandDispatcher
 
         con.WriteObject(new { TimeToReady = ttr });
 
-        con.CancelToken.WaitHandle.WaitOne(TimeSpan.FromSeconds(ttr)); // Release the thread if the client is gone
+        Task.Run(() =>
+        {
+            PrepareOrder(reg, con, lease);
+        });
 
+    }
+
+    private void PrepareOrder(CancellationTokenRegistration reg, Connection con, OrderLease lease)
+    {
+        
+        con.CancelToken.WaitHandle.WaitOne(TimeSpan.FromSeconds(lease.CalculateTime()));
+        
         if (reg.Unregister())
         {
             _service.ReleaseLease(lease);
             con.WriteObject(new { Message = "Your order is ready!" });
         }
     }
+    
+    
 }

@@ -2,6 +2,7 @@ using System.Net.Sockets;
 using System.Text;
 using System.Threading.Channels;
 using Newtonsoft.Json;
+using Newtonsoft.Json.Converters;
 using Serilog;
 
 namespace CoffeeServer;
@@ -35,16 +36,16 @@ public class Connection : IDisposable
 
     public void SetRoleFromJson(string firstRequest)
     {
-        var req = JsonConvert.DeserializeObject<RoleModel>(firstRequest);
-        if (req is not null)
-        {
-            SetRole(req.Role);
-            Log.Information("Role {ReqRole} has been set for {SockRemoteEndPoint}", req.Role, Sock.RemoteEndPoint);
-        }
-        else
+        var req = JsonConvert.DeserializeObject<RoleModel>(firstRequest,
+            new StringEnumConverter { AllowIntegerValues = false });
+
+        if (req is null || !Enum.IsDefined(req.Role))
         {
             throw new Exception("Invalid role");
         }
+
+        SetRole(req.Role);
+        Log.Information("Role {ReqRole} has been set for {SockRemoteEndPoint}", req.Role, Sock.RemoteEndPoint);
     }
 
     public void SetRole(ERole role)
@@ -119,27 +120,34 @@ public class Connection : IDisposable
 
         _outbox.Writer.TryComplete(); // no new messages
 
-        if (Role is ERole.Provider)
-        {
-            StoreService.Instance.RemoveProvider(this);
-        }
-        
         try
         {
-            _cts.Cancel();
+            if (Role is ERole.Provider)
+                StoreService.Instance.RemoveProvider(this);
         }
-        catch
+        catch (Exception e)
         {
+            Log.Error(e, "Failed to unsubscribe provider {EndPoint}", EndPoint);
         }
+        finally
+        {
+            try
+            {
+                _cts.Cancel();
+            }
+            catch
+            {
+            }
 
-        try
-        {
-            Sock.Shutdown(SocketShutdown.Both);
-        }
-        catch
-        {
-        }
+            try
+            {
+                Sock.Shutdown(SocketShutdown.Both);
+            }
+            catch
+            {
+            }
 
-        Sock.Close();
+            Sock.Close();
+        }
     }
 }

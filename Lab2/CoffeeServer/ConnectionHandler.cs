@@ -93,6 +93,6 @@ public class ConnectionHandler
         }
 
         obj.Remove("action");
-        await DispatchRegistry.Get(con.Role).Dispatch(con, action.ToLower(), obj);
+        DispatchRegistry.Get(con.Role).Dispatch(con, action.ToLower(), obj);
     }
 }

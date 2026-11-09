@@ -52,7 +52,7 @@ public class StoreService
     {
         lock (_lock)
         {
-            foreach (var notifier in _notifiers.Where(notifier => notifier.Con == connection))
+            foreach (var notifier in _notifiers.Where(notifier => notifier.Con == connection).ToList())
             {
                 notifier.Dispose();
                 _notifiers.Remove(notifier);

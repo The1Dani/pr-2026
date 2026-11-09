@@ -1,3 +1,4 @@
+using System.Net.Sockets;
 using System.Text;
 using Serilog;
 
@@ -31,7 +32,7 @@ public class RequestReader(Connection con, StringBuilder sb)
                     return false;
                 }
             }
-            catch (Exception e) when (e is ObjectDisposedException or ObjectDisposedException)
+            catch (Exception e) when (e is SocketException or ObjectDisposedException)
             {
                 Log.Logger.Debug(e, $"Connection {con.EndPoint} closed.");
                 return false;
