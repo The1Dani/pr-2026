@@ -18,17 +18,32 @@ import java.util.Map;
  */
 public class CommandParser {
 
-    public static final String HELP = """
-            Commands:
+    private static final String CLIENT_HELP = """
+            Commands (client):
               menu                              show products and stock
               order <product>=<qty> ...         e.g. order coffee=1 tea=2
-              deliver <product>=<qty> ...       (provider) e.g. deliver coffee=20
               {...}                             send a raw JSON line as-is
               help                              show this help
               quit                              disconnect and exit""";
 
-    /** Returns the JSON line to send. Throws IllegalArgumentException with a message for bad input. */
-    public static String parse(String input) {
+    private static final String PROVIDER_HELP = """
+            Commands (provider):
+              deliver <product>=<qty> ...       e.g. deliver coffee=20
+              {...}                             send a raw JSON line as-is
+              help                              show this help
+              quit                              disconnect and exit
+            Restock requests from the server are delivered automatically.""";
+
+    public static String help(String role) {
+        return role.equals("provider") ? PROVIDER_HELP : CLIENT_HELP;
+    }
+
+    /**
+     * Returns the JSON line to send. Throws IllegalArgumentException with a message for bad input.
+     * Commands are checked against the role, because the server silently ignores
+     * an action the role does not have (e.g. menu from a provider), so no answer would come.
+     */
+    public static String parse(String input, String role) {
         String line = input.strip();
         if (line.startsWith("{")) {
             return line;
@@ -36,6 +51,14 @@ public class CommandParser {
 
         String[] parts = line.split("\\s+");
         String command = parts[0].toLowerCase();
+
+        boolean provider = role.equals("provider");
+        if (provider && (command.equals("menu") || command.equals("order"))) {
+            throw new IllegalArgumentException(command + " is a client command; a provider can only deliver.");
+        }
+        if (!provider && (command.equals("deliver") || command.equals("delivery"))) {
+            throw new IllegalArgumentException(command + " is a provider command; connect as provider to use it.");
+        }
 
         return switch (command) {
             case "menu" -> {

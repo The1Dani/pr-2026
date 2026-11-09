@@ -55,4 +55,21 @@ public class Json {
         Matcher m = p.matcher(json);
         return m.find() ? m.group(1) : null;
     }
+
+    /**
+     * Reads every field whose value is a whole number from a flat JSON line,
+     * in order: {"Coffee":27,"Tea":4} -> {Coffee=27, Tea=4}.
+     */
+    public static Map<String, Long> getInts(String json) {
+        Pattern p = Pattern.compile("\"((?:[^\"\\\\]|\\\\.)*)\"\\s*:\\s*(-?\\d+)\\s*(?=[,}])");
+        Matcher m = p.matcher(json);
+        Map<String, Long> result = new LinkedHashMap<>();
+        while (m.find()) {
+            try {
+                result.put(m.group(1), Long.parseLong(m.group(2)));
+            } catch (NumberFormatException ignored) {      // too big for a long
+            }
+        }
+        return result;
+    }
 }

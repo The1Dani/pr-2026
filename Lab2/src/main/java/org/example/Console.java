@@ -29,9 +29,14 @@ public class Console {
      * (What the user already typed is still in the input buffer; Enter still sends it.)
      */
     public static void server(String text) {
+        event("[server] " + text);
+    }
+
+    /** Prints a line from the reader thread without breaking the prompt (see server()). */
+    public static void event(String text) {
         synchronized (LOCK) {
             System.out.print("\r\033[2K");          // go to line start and clear the line
-            System.out.println("[server] " + text);
+            System.out.println(text);
             System.out.print(PROMPT);
             System.out.flush();
         }

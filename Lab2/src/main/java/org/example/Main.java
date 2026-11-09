@@ -51,14 +51,16 @@ public class Main {
         }
 
         // Receive on a second thread, so server messages show up while the user types.
-        Thread reader = new Thread(new MessageReader(connection), "message-reader");
+        // A provider also answers restock requests automatically on that thread.
+        Provider provider = role.equals("provider") ? new Provider(connection) : null;
+        Thread reader = new Thread(new MessageReader(connection, provider), "message-reader");
         reader.start();
 
-        Console.info(CommandParser.HELP);
-        keyboardLoop(connection);
+        Console.info(CommandParser.help(role));
+        keyboardLoop(connection, role);
     }
 
-    private static void keyboardLoop(Connection connection) {
+    private static void keyboardLoop(Connection connection, String role) {
         BufferedReader keyboard = new BufferedReader(new InputStreamReader(System.in, StandardCharsets.UTF_8));
         try {
             while (true) {
@@ -69,13 +71,13 @@ public class Main {
                 if (input.isEmpty()) continue;
                 if (input.equalsIgnoreCase("quit") || input.equalsIgnoreCase("exit")) break;
                 if (input.equalsIgnoreCase("help")) {
-                    Console.info(CommandParser.HELP);
+                    Console.info(CommandParser.help(role));
                     continue;
                 }
 
                 String json;
                 try {
-                    json = CommandParser.parse(input);
+                    json = CommandParser.parse(input, role);
                 } catch (IllegalArgumentException e) {
                     Console.info(e.getMessage());
                     continue;
