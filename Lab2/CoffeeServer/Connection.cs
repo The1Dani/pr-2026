@@ -119,7 +119,7 @@ public class Connection : IDisposable
         if (Interlocked.Exchange(ref _disposed, 1) == 1) return;
 
         _outbox.Writer.TryComplete(); // no new messages
-        _writeLoop.Wait(Math.Min(20 * _outbox.Reader.Count, 500));
+        _writeLoop.Wait(100);
 
         try
         {
