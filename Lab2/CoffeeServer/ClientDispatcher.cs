@@ -1,3 +1,5 @@
+using Serilog;
+
 namespace CoffeeServer;
 
 public class ClientDispatcher : CommandDispatcher
@@ -14,6 +16,12 @@ public class ClientDispatcher : CommandDispatcher
     {
         var menu = _service.GetMenu();
         con.WriteObject(menu);
+        Log.Information("Action :menu: Connection({ConEndPoint})", con.EndPoint);
+    }
+
+    private static void InfoLog(Connection con, string message)
+    {
+        Log.Information("Action :order: Connection({ConEndPoint}) {message}", con.EndPoint, message);
     }
 
     private void HandleOrder(Connection con, MenuDto payload)
@@ -24,6 +32,7 @@ public class ClientDispatcher : CommandDispatcher
             if (kvp.Value <= 0)
             {
                 con.WriteError("You cannot order negative or zero items!");
+                InfoLog(con, "Client tried to order zero or negative items");
                 return;
             }
         }
@@ -32,37 +41,33 @@ public class ClientDispatcher : CommandDispatcher
         if (!_service.ReserveForOrder(payload, out var lease))
         {
             con.WriteError("Not enough products!");
+            InfoLog(con, "Not enough products");
             return;
         }
 
         var reg = con.CancelToken.Register(() =>
         {
             _service.AbortLease(lease);
-            Console.WriteLine($"The connection {con.EndPoint} has died during the order");
+            InfoLog(con, "died during the order");
         });
 
         var ttr = lease.CalculateTime();
 
         con.WriteObject(new { TimeToReady = ttr });
+        InfoLog(con, $"order will ready in {ttr}s");
 
-        Task.Run(() =>
-        {
-            PrepareOrder(reg, con, lease);
-        });
-
+        Task.Run(() => { PrepareOrder(reg, con, lease); });
     }
 
     private void PrepareOrder(CancellationTokenRegistration reg, Connection con, OrderLease lease)
     {
-        
         con.CancelToken.WaitHandle.WaitOne(TimeSpan.FromSeconds(lease.CalculateTime()));
-        
-        if (reg.Unregister())
-        {
-            _service.ReleaseLease(lease);
-            con.WriteObject(new { Message = "Your order is ready!" });
-        }
+
+        if (!reg.Unregister())
+            return;
+
+        _service.ReleaseLease(lease);
+        con.WriteObject(new { Message = "Your order is ready!" });
+        InfoLog(con, "Order ready!");
     }
-    
-    
 }

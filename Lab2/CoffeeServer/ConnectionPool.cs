@@ -29,7 +29,7 @@ public class ConnectionPool
             Log.Debug(e,"Something went wrong!");
         }
 
-        Console.WriteLine($"Listening on {_listener.LocalEndPoint}");
+        Log.Information("Listening on {ListenerLocalEndPoint}", _listener.LocalEndPoint);
 
         while (true)
         {
@@ -69,7 +69,7 @@ public class ConnectionPool
 
     public void CloseConnection(Connection connection)
     {
-        Console.WriteLine($"Connection {connection.Sock.RemoteEndPoint} closed");
+        Log.Information("Connection {SockRemoteEndPoint} closed", connection.Sock.RemoteEndPoint);
         connection.Dispose();
         lock (_lock)
         {

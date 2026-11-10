@@ -1,3 +1,5 @@
+using Serilog;
+
 namespace CoffeeServer;
 
 public class ProviderDispatcher : CommandDispatcher
@@ -16,6 +18,7 @@ public class ProviderDispatcher : CommandDispatcher
         {
             Message = "Delivery accepted.",
         });
+        Log.Information("Delivery accepted, delivery={Dictionary}, accepted={ToAdd}", items, toAdd);
     }
     
     
