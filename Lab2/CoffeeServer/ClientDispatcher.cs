@@ -66,7 +66,12 @@ public class ClientDispatcher : CommandDispatcher
         if (!reg.Unregister())
             return;
 
-        _service.ReleaseLease(lease);
+        if (con.CancelToken.IsCancellationRequested)
+        {
+            _service.ReleaseLease(lease);
+            return;
+        }
+
         con.WriteObject(new { Message = "Your order is ready!" });
         InfoLog(con, "Order ready!");
     }

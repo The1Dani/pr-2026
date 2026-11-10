@@ -37,6 +37,7 @@ public class LowStockNotifier(StoreRepository repo)
         {
             try
             {
+                if (_connections.Count <= 0) return;
                 _connections[Random.Shared.Next(_connections.Count)].WriteObject(askAmount);
             }
             catch (Exception e)
