@@ -14,7 +14,7 @@ public enum EProducts
 
 public class StoreRepository
 {
-    private readonly Dictionary<EProducts, int> _repo = new()
+    private readonly MenuDto _repo = new()
     {
         [EProducts.Coffee] = Random.Shared.Next(10, 50 + 1),
         [EProducts.Tea] = Random.Shared.Next(10, 50 + 1),
@@ -22,15 +22,20 @@ public class StoreRepository
     };
 
     private readonly Lock _lock = new();
-    public event Action<IReadOnlyDictionary<EProducts, int>>? LowStock;
+    public readonly LowStockNotifier LowStockNotifier;
     private const int LowThreshold = 5;
     private const int UpperLimit = 1000;
 
+    public StoreRepository()
+    {
+        LowStockNotifier = new LowStockNotifier(this);
+    }
+    
     public IReadOnlyDictionary<EProducts, int> GetAllProducts()
     {
         lock (_lock)
         {
-            return new Dictionary<EProducts, int>(_repo);
+            return new MenuDto(_repo);
         }
     }
 
@@ -54,13 +59,13 @@ public class StoreRepository
                 if (_repo[product] < LowThreshold)
                 {
                     lowStock = true;
-                    lowDict = new Dictionary<EProducts, int>(_repo);
+                    lowDict = new MenuDto(_repo);
                 }
             }
         }
 
         if (lowStock && lowDict is not null)
-            LowStock?.Invoke(lowDict);
+            LowStockNotifier.Notify(lowDict);
 
         return true;
     }

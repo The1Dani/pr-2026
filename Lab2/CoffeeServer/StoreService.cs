@@ -5,7 +5,7 @@ namespace CoffeeServer;
 
 public record OrderLease(int Id, MenuDto Items)
 {
-    private static readonly Dictionary<EProducts, int> _prepTimes = new()
+    private static readonly Dictionary<EProducts, int> PrepTimes = new()
     {
         [EProducts.Coffee] = 4,
         [EProducts.Tea] = 3,
@@ -18,7 +18,7 @@ public record OrderLease(int Id, MenuDto Items)
         foreach (var kvp in Items)
         {
             if (kvp.Value <= 0) continue;
-            time += kvp.Value * _prepTimes[kvp.Key];
+            time += kvp.Value * PrepTimes[kvp.Key];
         }
 
         return time;
@@ -29,9 +29,7 @@ public class StoreService
 {
     public static readonly StoreService Instance = new();
     private readonly StoreRepository _repo = new();
-    private readonly LinkedList<LowStockNotifier> _notifiers = [];
     private readonly Lock _lock = new();
-    //TODO: Add a list for the stock notifiers and handle the removal as well!!
 
     private int _idCounter = 0;
     private readonly ConcurrentDictionary<int, OrderLease> _leases = new();
@@ -42,22 +40,12 @@ public class StoreService
 
     public void AddProvider(Connection connection)
     {
-        lock (_lock)
-        {
-            _notifiers.AddLast(new LowStockNotifier(connection, _repo));
-        }
+        _repo.LowStockNotifier.AddConnection(connection);
     }
 
     public void RemoveProvider(Connection connection)
     {
-        lock (_lock)
-        {
-            foreach (var notifier in _notifiers.Where(notifier => notifier.Con == connection).ToList())
-            {
-                notifier.Dispose();
-                _notifiers.Remove(notifier);
-            }
-        }
+        _repo.LowStockNotifier.RemoveConnection(connection);
     }
     
     public IReadOnlyDictionary<EProducts, int> GetMenu() => _repo.GetAllProducts();
